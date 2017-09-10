@@ -1,12 +1,14 @@
 import asyncio
 import re
 from .Course import Course
-from .config import _URL_CURRENT_SEMESTER, _URL_PAST_SEMESTER, _URL_BASE
+from .config import _URL_CURRENT_SEMESTER, _URL_PAST_SEMESTER, _URL_BASE, _URL_ALL_SEMESTER
 
 
 class Semester:
-    def __init__(self, user, current=True):
-        if current is True: # TODO: three possible values when summer semester is comming
+    def __init__(self, user, when="all"):
+        if when is "all":  # TODO: three possible values when summer semester is comming
+            self.url = _URL_ALL_SEMESTER
+        elif when is "current":
             self.url = _URL_CURRENT_SEMESTER
         else:
             self.url = _URL_PAST_SEMESTER
@@ -28,24 +30,23 @@ class Semester:
             if url.startswith('/Mult'):
                 # Old WebLearning
                 url = _URL_BASE + url
-                id = url[-6:] # TODO: magic number
+                id = url[-6:]  # TODO: magic number
                 return Course(
-                    user  = user,
-                    id    = id,
-                    name  = name,
-                    is_new= False
+                    user=user,
+                    id=id,
+                    name=name,
+                    is_new=False
                 )
             else:
                 # New WebLearning
                 # substring starting from past the last `/`
                 id = re.search(r'/([^/]+)$', url).group(1)
                 return Course(
-                    user   = user,
-                    id     = id,
-                    name   = name,
-                    is_new = True
+                    user=user,
+                    id=id,
+                    name=name,
+                    is_new=True
                 )
-
 
         user = self.user
         soup = await self.user.make_soup(self.url)

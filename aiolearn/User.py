@@ -27,7 +27,8 @@ class User:
             self.session_new.close()
 
     async def wrapped_get(self, url):
-        if self.session is None: await self.login()
+        if self.session is None:
+            await self.login()
         _logger.debug("%s GET %s" % (self.username, url))
 
         if url == _URL_CURRENT_SEMESTER:
@@ -37,8 +38,6 @@ class User:
                 _logger.debug("%s cache hit" % self.username)
                 return cache
             _logger.debug("%s cache unavailable" % self.username)
-
-
 
         if not url.startswith(_URL_BASE_NEW):
             r = await self.session.get(url)
@@ -53,7 +52,8 @@ class User:
         return text
 
     async def session_post(self, url, body):
-        if self.session is None: await self.login()
+        if self.session is None:
+            await self.login()
         pass
 
     async def make_soup(self, url):
@@ -61,7 +61,7 @@ class User:
         return BeautifulSoup(html_text, "html.parser")
 
     async def cook_json(self, url):
-        json_text = await self.wrapped_get(url) # TODO: response.json()
+        json_text = await self.wrapped_get(url)  # TODO: response.json()
         return json.loads(json_text)
 
     async def login(self):
@@ -78,6 +78,6 @@ class User:
             raise RuntimeError(r)
 
         # New WebLearning
-        soup = await self.make_soup(_URL_CURRENT_SEMESTER) # cache in play
+        soup = await self.make_soup(_URL_CURRENT_SEMESTER)  # cache in play
         url_ticket = soup.iframe['src']
         await self.wrapped_get(url_ticket)
