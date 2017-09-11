@@ -27,6 +27,7 @@ async def main():
         works = await course.works
         messages = await course.messages
         files = await course.files
+        teacher = await course.teacher
         info = await course.info
         print('\n>>works')
         for work in works:
@@ -37,9 +38,10 @@ async def main():
         print('\n>>files')
         for file in files:
             print(file.name)
+        print('\n>>teacher')
+        print(teacher.teacherName)
         print('\n>>info')
-        for i in info:
-            print(info.teacher)
+        print(info.intro)
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
