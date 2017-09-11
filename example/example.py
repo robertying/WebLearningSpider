@@ -6,6 +6,7 @@ from context import aiolearn
 async def main():
     user = aiolearn.User(username=input('Input username: '),
                          password=getpass.getpass("Input password: "))
+    user = aiolearn.User(username='yingr16', password='$lBqczk100ndbddT')
     semester = aiolearn.Semester(user, when="all")
     courses = await semester.courses
 

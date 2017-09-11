@@ -10,6 +10,7 @@ For fetching data from [Tsinghua WebLearning](http://learn.tsinghua.edu.cn)
 - Supporting multi-user connections
 ## Improvements
 - Add course info fetching
+- Add New WebLearning support
 ## Example
 ```python
 import asyncio

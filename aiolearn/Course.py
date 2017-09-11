@@ -214,8 +214,31 @@ class Course:
                 teacher=teacher
             )
 
+        async def get_info_new(item):
+            teacher = item["resultList"]["teacherInfo"]["name"]
+            # fetch whatever you want from json file and initialize Info object with them
+            return Info(
+                user="",
+                name="name",
+                cid="cid",
+                course_id="course_id",
+                credit="credit",
+                studyTime="studyTime",
+                textbook="textbook",
+                referenceBook="referenceBook",
+                examKind="examKind",
+                intro="intro",
+                teacher=teacher
+            )
+
         user = self.user
-        info_url = _COURSE_INFO % self.id
-        info_soup = await self.user.make_soup(info_url)
-        info = await get_info(info_soup)
+        if not self.is_new:
+            info_url = _COURSE_INFO % self.id
+            info_soup = await self.user.make_soup(info_url)
+            info = await get_info(info_soup)
+        else:
+            info_url = _COURSE_INFO_NEW % self.id
+            info_json = await self.user.cook_json(info_url)
+            info = await get_info_new(info_json)
+
         return info

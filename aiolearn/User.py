@@ -4,8 +4,8 @@ import logging
 import asyncio
 import json
 from bs4 import BeautifulSoup
-from .config import _URL_LOGIN, _URL_CURRENT_SEMESTER, _URL_BASE_NEW
-logging.basicConfig(level=logging.DEBUG)
+from .config import _URL_LOGIN, _URL_CURRENT_SEMESTER, _URL_BASE_NEW, _URL_SPEC_NEW
+# logging.basicConfig(level=logging.DEBUG)
 _logger = logging.getLogger(__name__)
 loop = asyncio.get_event_loop()
 
@@ -41,8 +41,10 @@ class User:
 
         if not url.startswith(_URL_BASE_NEW):
             r = await self.session.get(url)
-        else:
+        elif not url.startswith(_URL_SPEC_NEW):
             r = await self.session_new.get(url)
+        else:
+            r = await self.session_new.post(url)
         text = await r.text()
 
         if url == _URL_CURRENT_SEMESTER:
