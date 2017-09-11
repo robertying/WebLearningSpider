@@ -5,9 +5,10 @@ from .Message import Message
 from .File import File
 from .Work import Work
 from .Info import Info
+from .Teacher import Teacher
 from .config import (
-    _COURSE_WORK, _COURSE_MSG, _COURSE_FILES, _COURSE_INFO, _COURSE_INFO_NEW,
-    _COURSE_MSG_NEW, _COURSE_WORK_NEW, _COURSE_FILE_NEW,
+    _COURSE_WORK, _COURSE_MSG, _COURSE_FILES, _COURSE_INFO, _COURSE_TEACHER_NEW,
+    _COURSE_MSG_NEW, _COURSE_WORK_NEW, _COURSE_FILE_NEW, _COURSE_INFO_NEW,
     _URL_PREF, _ID_COURSE_URL, _PAGE_FILE, _PAGE_MSG)
 from bs4 import Comment
 
@@ -178,12 +179,33 @@ class Course:
         return files
 
     @property
-    def dict(self):
-        d = self.__dict__.copy()
-        user = self.user.__dict__.copy()
-        del user['session']
-        d['user'] = user
-        return d
+    async def teacher(self):
+        async def get_teacher(item):
+            tds = item.find_all('td')
+            teacherName = tds[19].text.replace("\xa0", "")
+
+            return Teacher(
+                teacherName=teacherName
+            )
+
+        async def get_teacher_new(item):
+            teacherName = item["resultList"]["teacherInfo"]["name"]
+            # fetch whatever you want from json file and initialize Info object with them
+            return Teacher(
+                teacherName=teacherName
+            )
+
+        user = self.user
+        if not self.is_new:
+            teacher_url = _COURSE_INFO % self.id
+            teacher_soup = await self.user.make_soup(teacher_url)
+            teacher = await get_teacher(teacher_soup)
+        else:
+            teacher_url = _COURSE_TEACHER_NEW % self.id
+            teacher_json = await self.user.cook_json(teacher_url)
+            teacher = await get_teacher_new(teacher_json)
+
+        return teacher
 
     @property
     async def info(self):
@@ -197,7 +219,7 @@ class Course:
             textbook = tds[27].text.replace(" ", "")
             referenceBook = tds[29].text.replace(" ", "")
             examKind = tds[31].text.replace(" ", "")
-            intro = tds[33].text.replace(" ", "")
+            intro = tds[35].text.replace(" ", "")
             teacher = tds[19].text.replace("\xa0", "")
 
             return Info(
@@ -211,11 +233,11 @@ class Course:
                 referenceBook=referenceBook,
                 examKind=examKind,
                 intro=intro,
-                teacher=teacher
+                teacher=teacher,
             )
 
         async def get_info_new(item):
-            teacher = item["resultList"]["teacherInfo"]["name"]
+            intro = item["allInfo"]["detail_c"]
             # fetch whatever you want from json file and initialize Info object with them
             return Info(
                 user="",
@@ -227,8 +249,8 @@ class Course:
                 textbook="textbook",
                 referenceBook="referenceBook",
                 examKind="examKind",
-                intro="intro",
-                teacher=teacher
+                intro=intro,
+                teacher="teacher",
             )
 
         user = self.user
@@ -242,3 +264,11 @@ class Course:
             info = await get_info_new(info_json)
 
         return info
+
+    @property
+    def dict(self):
+        d = self.__dict__.copy()
+        user = self.user.__dict__.copy()
+        del user['session']
+        d['user'] = user
+        return d

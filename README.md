@@ -11,6 +11,7 @@ For fetching data from [Tsinghua WebLearning](http://learn.tsinghua.edu.cn)
 ## Improvements
 - Add course info fetching
 - Add New WebLearning support
+- Supplement New WebLearning course info fetching
 ## Example
 ```python
 import asyncio
