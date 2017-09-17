@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/robertying/WebLearningSpider.svg?branch=master)](https://travis-ci.org/robertying/WebLearningSpider)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)]()
 # WebLearningSpider
 Improved [kehao95](https://github.com/kehao95)'s aiolearn
